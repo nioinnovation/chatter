@@ -41,4 +41,20 @@ class Discussion extends Model
     {
         return $this->belongsToMany(config('chatter.user.namespace'), 'chatter_user_discussion', 'discussion_id', 'user_id');
     }
+
+    /*
+     * Accessed with $discussion->url
+     */
+    public function getUrlAttribute() 
+    {
+        return '/'. config('chatter.routes.home') .'/'. config('chatter.routes.discussion') .'/'. $this->category->slug .'/'. $this->slug;
+    }
+
+    /*
+     * Accessed with $discussion->replies
+     */
+    public function getRepliesAttribute() 
+    {
+        return $this->postsCount[0]->total;
+    }
 }

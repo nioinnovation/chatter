@@ -72,7 +72,7 @@
 		        	<ul class="discussions">
 		        		@foreach($discussions as $discussion)
 				        	<li>
-				        		<a class="discussion_list" href="/{{ Config::get('chatter.routes.home') }}/{{ Config::get('chatter.routes.discussion') }}/{{ $discussion->category->slug }}/{{ $discussion->slug }}">
+				        		<a class="discussion_list" href="{{ $discussion->url }}">
 					        		<div class="chatter_avatar">
 					        			@if(Config::get('chatter.user.avatar_image_database_field'))
 
@@ -107,7 +107,7 @@
 
 					        		<div class="chatter_right">
 
-					        			<div class="chatter_count"><i class="chatter-bubble"></i> {{ $discussion->postsCount[0]->total }}</div>
+					        			<div class="chatter_count"><i class="chatter-bubble"></i> {{ $discussion->replies }}</div>
 					        		</div>
 
 					        		<div class="chatter_clear"></div>
