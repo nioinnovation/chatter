@@ -14,10 +14,12 @@ class ChatterController extends Controller
         $pagination_results = config('chatter.paginate.num_of_results');
 
         $discussions = Models::discussion()->with('user')->with('post')->with('postsCount')->with('category')->orderBy('created_at', 'DESC')->paginate($pagination_results);
+
+        $categorySelected = false;
         if (isset($slug)) {
-            $category = Models::category()->where('slug', '=', $slug)->first();
-            if (isset($category->id)) {
-                $discussions = Models::discussion()->with('user')->with('post')->with('postsCount')->with('category')->where('chatter_category_id', '=', $category->id)->orderBy('created_at', 'DESC')->paginate($pagination_results);
+            $categorySelected = Models::category()->where('slug', '=', $slug)->first();
+            if (isset($categorySelected->id)) {
+                $discussions = Models::discussion()->with('user')->with('post')->with('postsCount')->with('category')->where('chatter_category_id', '=', $categorySelected->id)->orderBy('created_at', 'DESC')->paginate($pagination_results);
             }
         }
 
@@ -33,7 +35,7 @@ class ChatterController extends Controller
             \App::register('GrahamCampbell\Markdown\MarkdownServiceProvider');
         }
 
-        return view('chatter::home', compact('discussions', 'categories', 'categoriesMenu', 'chatter_editor'));
+        return view('chatter::home', compact('discussions', 'categorySelected', 'categories', 'categoriesMenu', 'chatter_editor'));
     }
 
     public function login()
