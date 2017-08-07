@@ -13,15 +13,17 @@ class ChatterController extends Controller
     {
         $pagination_results = config('chatter.paginate.num_of_results');
 
-        $discussions = Models::discussion()->with('user')->with('post')->with('postsCount')->with('category')->orderBy('created_at', 'DESC')->paginate($pagination_results);
+        $discussions = Models::discussion()->with('user')->with('post')->with('postsCount')->with('category')->orderBy(config('chatter.order_by.discussions.order'), config('chatter.order_by.discussions.by'));
 
         $categorySelected = false;
         if (isset($slug)) {
             $categorySelected = Models::category()->where('slug', '=', $slug)->first();
             if (isset($categorySelected->id)) {
-                $discussions = Models::discussion()->with('user')->with('post')->with('postsCount')->with('category')->where('chatter_category_id', '=', $categorySelected->id)->orderBy('created_at', 'DESC')->paginate($pagination_results);
+                $discussions = $discussions->where('chatter_category_id', '=', $categorySelected->id);
             }
         }
+
+        $discussions = $discussions->paginate($pagination_results);
 
         $categories = Models::category()->get();
         $categoriesMenu = Helper::categoriesMenu(array_filter($categories->toArray(), function ($item) {
