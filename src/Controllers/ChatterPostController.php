@@ -209,28 +209,6 @@ class ChatterPostController extends Controller
             ]);
         }
 
-        if ($post->discussion->posts()->oldest()->first()->id === $post->id) {
-            if(config('chatter.soft_deletes')) {
-                $post->discussion->posts()->delete();
-                $post->discussion()->delete();
-            } else {
-                $post->discussion->posts()->forceDelete();
-                $post->discussion()->forceDelete();
-            }
-
-            return redirect('/'.config('chatter.routes.home'))->with([
-                'chatter_alert_type' => 'success',
-                'chatter_alert'      => 'Successfully deleted the response and '.strtolower(config('chatter.titles.discussion')).'.',
-            ]);
-        }
-
-        $post->delete();
-
-        $url = '/'.config('chatter.routes.home').'/'.config('chatter.routes.discussion').'/'.$post->discussion->category->slug.'/'.$post->discussion->slug;
-
-        return redirect($url)->with([
-            'chatter_alert_type' => 'success',
-            'chatter_alert'      => 'Successfully deleted the response from the '.config('chatter.titles.discussion').'.',
-        ]);
+        return $post->deletePost();
     }
 }

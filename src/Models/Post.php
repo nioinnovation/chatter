@@ -23,4 +23,34 @@ class Post extends Model
     {
         return $this->belongsTo(config('chatter.user.namespace'));
     }
+
+    /**
+     * If config.soft_deletes is true 
+     * this only updates the deleted_at 
+     * timestamp on the Model
+     */
+    public function deletePost() 
+    {
+        if ($this->discussion->posts()->oldest()->first()->id === $this->id) {
+            if(config('chatter.soft_deletes')) {
+                $this->discussion->posts()->delete();
+                $this->discussion()->delete();
+            } else {
+                $this->discussion->posts()->forceDelete();
+                $this->discussion()->forceDelete();
+            }
+
+            return redirect('/'.config('chatter.routes.home'))->with([
+                'chatter_alert_type' => 'success',
+                'chatter_alert'      => 'Successfully deleted the response and '.strtolower(config('chatter.titles.discussion')).'.',
+            ]);
+        }
+
+        $this->delete();
+
+        return redirect($this->discussion->url)->with([
+            'chatter_alert_type' => 'success',
+            'chatter_alert'      => 'Successfully deleted the response from the '.config('chatter.titles.discussion').'.',
+        ]);
+    }
 }
