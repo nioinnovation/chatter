@@ -19,4 +19,12 @@ class Category extends Model
     {
         return $this->hasMany(Models::classname(self::class), 'parent_id')->orderBy('order', 'asc');
     }
+
+    /*
+     * Accessed with $category->url
+     */
+    public function getUrlAttribute() 
+    {
+        return config('chatter.routes.home') .'/'. config('chatter.routes.category') .'/'. $this->slug;
+    }
 }

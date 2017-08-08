@@ -90,7 +90,10 @@ class ChatterPostController extends Controller
         }
 
         if ($new_post->id) {
-            Event::fire(new ChatterAfterNewResponse($request));
+            $discussion->last_reply_at = $discussion->freshTimestamp();
+            $discussion->save();
+            
+            Event::fire(new ChatterAfterNewResponse($request, $new_post));
             if (function_exists('chatter_after_new_response')) {
                 chatter_after_new_response($request);
             }
@@ -161,7 +164,7 @@ class ChatterPostController extends Controller
 
         $post = Models::post()->find($id);
         if (!Auth::guest() && (Auth::user()->id == $post->user_id)) {
-            $post->body = Purifier::clean($request->body);
+            $post->body = $post->markdown ? $request->body : Purifier::clean($request->body);
             $post->save();
 
             $discussion = Models::discussion()->find($post->chatter_discussion_id);
@@ -206,23 +209,6 @@ class ChatterPostController extends Controller
             ]);
         }
 
-        if ($post->discussion->posts()->oldest()->first()->id === $post->id) {
-            $post->discussion->posts()->delete();
-            $post->discussion()->delete();
-
-            return redirect('/'.config('chatter.routes.home'))->with([
-                'chatter_alert_type' => 'success',
-                'chatter_alert'      => 'Successfully deleted the response and '.strtolower(config('chatter.titles.discussion')).'.',
-            ]);
-        }
-
-        $post->delete();
-
-        $url = '/'.config('chatter.routes.home').'/'.config('chatter.routes.discussion').'/'.$post->discussion->category->slug.'/'.$post->discussion->slug;
-
-        return redirect($url)->with([
-            'chatter_alert_type' => 'success',
-            'chatter_alert'      => 'Successfully deleted the response from the '.config('chatter.titles.discussion').'.',
-        ]);
+        return $post->deletePost();
     }
 }

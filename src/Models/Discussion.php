@@ -3,12 +3,16 @@
 namespace DevDojo\Chatter\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Discussion extends Model
 {
+    use SoftDeletes;
+    
     protected $table = 'chatter_discussion';
     public $timestamps = true;
     protected $fillable = ['title', 'chatter_category_id', 'user_id', 'slug', 'color'];
+    protected $dates = ['deleted_at', 'last_reply_at'];
 
     public function user()
     {
@@ -40,5 +44,21 @@ class Discussion extends Model
     public function users()
     {
         return $this->belongsToMany(config('chatter.user.namespace'), 'chatter_user_discussion', 'discussion_id', 'user_id');
+    }
+
+    /*
+     * Accessed with $discussion->url
+     */
+    public function getUrlAttribute() 
+    {
+        return '/'. config('chatter.routes.home') .'/'. config('chatter.routes.discussion') .'/'. $this->category->slug .'/'. $this->slug;
+    }
+
+    /*
+     * Accessed with $discussion->replies
+     */
+    public function getRepliesAttribute() 
+    {
+        return $this->postsCount[0]->total;
     }
 }
