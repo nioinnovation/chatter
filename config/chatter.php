@@ -264,6 +264,7 @@ return [
 
     'email' => [
         'enabled' => false,
+        'markdown' => false,
         'view'    => 'chatter::email',
     ],
 

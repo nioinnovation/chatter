@@ -30,9 +30,17 @@ class ChatterDiscussionUpdated extends Mailable
      */
     public function build()
     {
-        return $this->view(config('chatter.email.view'))
+        if (config('chatter.email.markdown')) {
+            return $this->markdown(config('chatter.email.view'))
                     ->with([
                         'discussion' => $this->discussion,
                     ]);
+        } else {
+            return $this->view(config('chatter.email.view'))
+                    ->with([
+                        'discussion' => $this->discussion,
+                    ]);
+
+        }
     }
 }
