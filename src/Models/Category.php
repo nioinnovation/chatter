@@ -25,6 +25,6 @@ class Category extends Model
      */
     public function getUrlAttribute() 
     {
-        return config('chatter.routes.home') .'/'. config('chatter.routes.category') .'/'. $this->slug;
+        return config('chatter.routes.category') .'/'. $this->slug;
     }
 }
