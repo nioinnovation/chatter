@@ -51,7 +51,7 @@ class Discussion extends Model
      */
     public function getUrlAttribute() 
     {
-        return '/'. config('chatter.routes.home') .'/'. config('chatter.routes.discussion') .'/'. $this->category->slug .'/'. $this->slug;
+        return config('chatter.routes.discussion') .'/'. $this->category->slug .'/'. $this->slug;
     }
 
     /*

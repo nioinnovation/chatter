@@ -40,7 +40,7 @@ class Post extends Model
                 $this->discussion()->forceDelete();
             }
 
-            return redirect('/'.config('chatter.routes.home'))->with([
+            return redirect('/')->with([
                 'chatter_alert_type' => 'success',
                 'chatter_alert'      => 'Successfully deleted the response and '.strtolower(config('chatter.titles.discussion')).'.',
             ]);
