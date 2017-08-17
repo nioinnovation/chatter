@@ -68,6 +68,17 @@ class ChatterHelper
     }
 
     /**
+     * In the case of a subdomain
+     * route('chatter.routes.home') will not be used
+     *
+     * @return string
+     */
+    public static function baseRoute()
+    {
+        return config('chatter.subdomain.active') ? config('chatter.subdomain.url') : '/'.config('chatter.routes.home');
+    }
+
+    /**
      * This function will demote H1 to H2, H2 to H3, H4 to H5, etc.
      * this will help with SEO so there are not multiple H1 tags
      * on the same page.

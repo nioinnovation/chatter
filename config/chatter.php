@@ -4,6 +4,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Subdomain Support
+    |--------------------------------------------------------------------------
+    |
+    | Here you can specify whether or not the forum will be a subdomain
+    | If true the url will replace route('chatter.routes.home')
+    |
+    */
+
+    'subdomain' => [
+        'active' => false,
+        'url'    => env('FORUM_URL', '/'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Forum Routes
     |--------------------------------------------------------------------------
     |
