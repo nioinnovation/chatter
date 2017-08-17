@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use DevDojo\Chatter\Events\ChatterAfterNewDiscussion;
 use DevDojo\Chatter\Events\ChatterBeforeNewDiscussion;
 use DevDojo\Chatter\Models\Models;
+use DevDojo\Chatter\Helpers\ChatterHelper;
 use Event;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as Controller;
@@ -84,7 +85,7 @@ class ChatterDiscussionController extends Controller
                     'chatter_alert'      => 'In order to prevent spam, please allow at least '.config('chatter.security.time_between_posts').$minute_copy.' in between submitting content.',
                     ];
 
-                return redirect('/'.config('chatter.routes.home'))->with($chatter_alert)->withInput();
+                return redirect(ChatterHelper::baseRoute())->with($chatter_alert)->withInput();
             }
         }
 
@@ -145,14 +146,14 @@ class ChatterDiscussionController extends Controller
                 'chatter_alert'      => 'Successfully created a new '.config('chatter.titles.discussion').'.',
                 ];
 
-            return redirect('/'.config('chatter.routes.home').'/'.config('chatter.routes.discussion').'/'.$category->slug.'/'.$slug)->with($chatter_alert);
+            return redirect(ChatterHelper::baseRoute().'/'.config('chatter.routes.discussion').'/'.$category->slug.'/'.$slug)->with($chatter_alert);
         } else {
             $chatter_alert = [
                 'chatter_alert_type' => 'danger',
                 'chatter_alert'      => 'Whoops :( There seems to be a problem creating your '.config('chatter.titles.discussion').'.',
                 ];
 
-            return redirect('/'.config('chatter.routes.home').'/'.config('chatter.routes.discussion').'/'.$category->slug.'/'.$slug)->with($chatter_alert);
+            return redirect(ChatterHelper::baseRoute().'/'.config('chatter.routes.discussion').'/'.$category->slug.'/'.$slug)->with($chatter_alert);
         }
     }
 
@@ -181,7 +182,7 @@ class ChatterDiscussionController extends Controller
     public function show($category, $slug = null)
     {
         if (!isset($category) || !isset($slug)) {
-            return redirect(config('chatter.routes.home'));
+            return redirect(ChatterHelper::baseRoute());
         }
 
         $discussion = Models::discussion()->where('slug', '=', $slug)->first();
@@ -191,7 +192,7 @@ class ChatterDiscussionController extends Controller
 
         $discussion_category = Models::category()->find($discussion->chatter_category_id);
         if ($category != $discussion_category->slug) {
-            return redirect(config('chatter.routes.home').'/'.config('chatter.routes.discussion').'/'.$discussion_category->slug.'/'.$discussion->slug);
+            return redirect(ChatterHelper::baseRoute().'/'.config('chatter.routes.discussion').'/'.$discussion_category->slug.'/'.$discussion->slug);
         }
         $posts = Models::post()->with('user')->where('chatter_discussion_id', '=', $discussion->id)->orderBy(config('chatter.order_by.posts.order'), config('chatter.order_by.posts.by'))->paginate(10);
 
@@ -273,7 +274,7 @@ class ChatterDiscussionController extends Controller
     public function toggleEmailNotification($category, $slug = null)
     {
         if (!isset($category) || !isset($slug)) {
-            return redirect(config('chatter.routes.home'));
+            return redirect(ChatterHelper::baseRoute());
         }
 
         $discussion = Models::discussion()->where('slug', '=', $slug)->first();
