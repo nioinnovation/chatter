@@ -4,6 +4,7 @@ namespace DevDojo\Chatter\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use DevDojo\Chatter\Helpers\ChatterHelper;
 
 class Post extends Model
 {
@@ -40,7 +41,7 @@ class Post extends Model
                 $this->discussion()->forceDelete();
             }
 
-            return redirect('/')->with([
+            return redirect(ChatterHelper::baseRoute())->with([
                 'chatter_alert_type' => 'success',
                 'chatter_alert'      => 'Successfully deleted the response and '.strtolower(config('chatter.titles.discussion')).'.',
             ]);
