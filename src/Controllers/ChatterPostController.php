@@ -6,6 +6,7 @@ use Auth;
 use Carbon\Carbon;
 use DevDojo\Chatter\Events\ChatterAfterNewResponse;
 use DevDojo\Chatter\Events\ChatterBeforeNewResponse;
+use DevDojo\Chatter\Events\ChatterAfterEditResponse;
 use DevDojo\Chatter\Mail\ChatterDiscussionUpdated;
 use DevDojo\Chatter\Models\Models;
 use DevDojo\Chatter\Helpers\ChatterHelper;
@@ -174,6 +175,8 @@ class ChatterPostController extends Controller
             if (!isset($category->slug)) {
                 $category = Models::category()->first();
             }
+
+            Event::fire(new ChatterAfterEditResponse($request, $post));
 
             $chatter_alert = [
                 'chatter_alert_type' => 'success',
