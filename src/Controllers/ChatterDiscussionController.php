@@ -111,6 +111,7 @@ class ChatterDiscussionController extends Controller
             'user_id'             => $user_id,
             'slug'                => $slug,
             'color'               => $request->color,
+            'last_reply_at'       => Carbon::now(),
             ];
 
         $category = Models::category()->find($request->chatter_category_id);
