@@ -161,7 +161,9 @@ class ChatterPostController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+            return $request->ajax() || $request->wantsJson()
+                                ? response('Invalid Request', 400) 
+                                : back()->withErrors($validator)->withInput();
         }
 
         $post = Models::post()->find($id);
@@ -183,14 +185,18 @@ class ChatterPostController extends Controller
                 'chatter_alert'      => 'Successfully updated the '.config('chatter.titles.discussion').'.',
                 ];
 
-            return redirect(ChatterHelper::baseRoute().'/'.config('chatter.routes.discussion').'/'.$category->slug.'/'.$discussion->slug)->with($chatter_alert);
+            return $request->ajax() || $request->wantsJson()
+                                ? response('success', 200) 
+                                : redirect(ChatterHelper::baseRoute().'/'.config('chatter.routes.discussion').'/'.$category->slug.'/'.$discussion->slug)->with($chatter_alert);
         } else {
             $chatter_alert = [
                 'chatter_alert_type' => 'danger',
                 'chatter_alert'      => 'Nah ah ah... Could not update your response. Make sure you\'re not doing anything shady.',
                 ];
 
-            return redirect(ChatterHelper::baseRoute())->with($chatter_alert);
+            return $request->ajax() || $request->wantsJson()
+                                ? response('error', 400) 
+                                : redirect(ChatterHelper::baseRoute())->with($chatter_alert);
         }
     }
 
@@ -207,12 +213,16 @@ class ChatterPostController extends Controller
         $post = Models::post()->with('discussion')->findOrFail($id);
 
         if ($request->user()->id !== (int) $post->user_id) {
-            return redirect(ChatterHelper::baseRoute())->with([
+            return $request->ajax() || $request->wantsJson()
+                                ? response('error', 400) 
+                                : redirect(ChatterHelper::baseRoute())->with([
                 'chatter_alert_type' => 'danger',
                 'chatter_alert'      => 'Nah ah ah... Could not delete the response. Make sure you\'re not doing anything shady.',
             ]);
         }
-
-        return $post->deletePost();
+        $post->deletePost();
+        return $request->ajax() || $request->wantsJson()
+                                ? response('success', 200) 
+                                : redirect(ChatterHelper::baseRoute());
     }
 }
